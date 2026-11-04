@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTrust – Financial Transaction & Risk Management System</title>
+    <meta name="description" content="Enterprise financial transaction surveillance, double-entry ledger verification, rule-based risk scoring, and immutable audit trail.">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom Financial SaaS Design System -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <div>
+                <div class="brand-title">FinTrust</div>
+                <div class="brand-subtitle">Risk & Surveillance</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Operations</div>
+            <a class="nav-item active" data-view="overview">
+                <i class="bi bi-grid-1x2-fill"></i> Overview Dashboard
+            </a>
+            <a class="nav-item" data-view="organizations">
+                <i class="bi bi-building"></i> Organizations
+            </a>
+            <a class="nav-item" data-view="transactions">
+                <i class="bi bi-arrow-left-right"></i> Transactions
+            </a>
+
+            <div class="nav-section-title">Compliance & Auditing</div>
+            <a class="nav-item" data-view="ledger">
+                <i class="bi bi-book-half"></i> Ledger Verification
+            </a>
+            <a class="nav-item" data-view="risk">
+                <i class="bi bi-exclamation-triangle-fill"></i> Risk & Alerts
+            </a>
+            <a class="nav-item" data-view="audit">
+                <i class="bi bi-journal-text"></i> Audit Trail
+            </a>
+            <a class="nav-item" data-view="reports">
+                <i class="bi bi-file-earmark-bar-graph"></i> Reports & Vault
+            </a>
+
+            <div class="nav-section-title">Infrastructure</div>
+            <a class="nav-item" data-view="architecture">
+                <i class="bi bi-hdd-network"></i> Architecture
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="architecture-tag">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-white-50 small">PHP Service:</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-0">Port 8000</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="text-white-50 small">Java Microservice:</span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-0">Port 8080</span>
+                </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="text-white-50 small">PostgreSQL & S3:</span>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle py-0">Connected</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <h1 class="page-title mb-0" id="current-view-title">Overview Dashboard</h1>
+                <div class="service-status-pill">
+                    <div class="status-dot-pulse"></div>
+                    <span>Microservices Synchronized</span>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <button class="btn btn-ft-primary py-2 px-3" data-bs-toggle="modal" data-bs-target="#createTransactionModal">
+                    <i class="bi bi-plus-circle-fill"></i> New Transaction
+                </button>
+
+                <div class="user-profile-widget" id="user-profile-dropdown" title="Current Authenticated User">
+                    <div class="user-avatar" id="topbar-user-avatar">AW</div>
+                    <div class="d-none d-md-block text-start">
+                        <div class="fw-bold small text-dark" id="topbar-user-name">Alexander Wright</div>
+                        <div class="text-muted" style="font-size: 0.72rem;" id="topbar-user-role">CHIEF RISK OFFICER</div>
+                    </div>
+                </div>
+
+                <button class="btn btn-sm btn-ft-secondary py-2" id="btn-logout" title="Sign Out">
+                    <i class="bi bi-box-arrow-right"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Body -->
+        <main class="content-body">
+            
+            <!-- VIEW 1: OVERVIEW DASHBOARD -->
+            <section id="view-overview" class="app-view">
+                <!-- Critical Alerts Marquee Ticker -->
+                <div id="alert-ticker-container" class="mb-4"></div>
+
+                <!-- KPI Metric Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="kpi-card" style="--card-accent: #0066FF;">
+                            <div class="kpi-top">
+                                <span class="kpi-title">Total Processed Volume</span>
+                                <div class="kpi-icon-wrap"><i class="bi bi-currency-dollar"></i></div>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-volume">$0.00</div>
+                            <div class="kpi-meta text-muted">
+                                <i class="bi bi-shield-check text-success"></i> Reconciled double-entry ledger
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="kpi-card" style="--card-accent: #10B981;">
+                            <div class="kpi-top">
+                                <span class="kpi-title">Total Transactions</span>
+                                <div class="kpi-icon-wrap" style="color: #10B981; background: rgba(16, 185, 129, 0.1);"><i class="bi bi-arrow-repeat"></i></div>
+                            </div>
+                            <div class="kpi-value" id="kpi-total-tx">0</div>
+                            <div class="kpi-meta text-muted">
+                                Across <span class="fw-bold text-dark" id="kpi-active-orgs">3</span> Active Organizations
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="kpi-card" style="--card-accent: #EF4444;">
+                            <div class="kpi-top">
+                                <span class="kpi-title">High Risk / Flagged</span>
+                                <div class="kpi-icon-wrap" style="color: #EF4444; background: rgba(239, 68, 68, 0.1);"><i class="bi bi-shield-exclamation"></i></div>
+                            </div>
+                            <div class="kpi-value text-danger" id="kpi-high-risk">0</div>
+                            <div class="kpi-meta text-muted">
+                                Risk engine score ≥ 70/100
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="kpi-card" style="--card-accent: #F59E0B;">
+                            <div class="kpi-top">
+                                <span class="kpi-title">Ledger Integrity Status</span>
+                                <div class="kpi-icon-wrap" style="color: #F59E0B; background: rgba(245, 158, 11, 0.1);"><i class="bi bi-scale"></i></div>
+                            </div>
+                            <div class="kpi-value fs-4" id="kpi-ledger-variance">
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Balanced</span>
+                            </div>
+                            <div class="kpi-meta text-muted">
+                                Double-entry debits equal credits
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-8">
+                        <div class="card-fintrust h-100">
+                            <div class="card-header">
+                                <h5><i class="bi bi-graph-up text-primary me-2"></i>Financial Transaction Volume & Velocity (Daily)</h5>
+                                <span class="badge bg-light text-dark border">Real-Time Aggregates</span>
+                            </div>
+                            <div class="card-body" style="height: 320px;">
+                                <canvas id="chart-transaction-trends"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="card-fintrust h-100">
+                            <div class="card-header">
+                                <h5><i class="bi bi-pie-chart text-danger me-2"></i>Risk Tier Distribution</h5>
+                                <span class="badge bg-light text-dark border">Surveillance Rules</span>
+                            </div>
+                            <div class="card-body d-flex flex-column align-items-center justify-content-center" style="height: 320px;">
+                                <canvas id="chart-risk-distribution"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions & Balance Breakdown -->
+                <div class="row g-4">
+                    <div class="col-xl-8">
+                        <div class="card-fintrust">
+                            <div class="card-header">
+                                <h5><i class="bi bi-clock-history text-secondary me-2"></i>Recent Financial Transactions</h5>
+                                <a href="#" class="btn btn-sm btn-ft-secondary" onclick="switchView('transactions'); return false;">View All Transactions</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-fintrust mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Reference</th>
+                                                <th>Organization</th>
+                                                <th>Amount</th>
+                                                <th>Status</th>
+                                                <th>Risk Tier</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-tx-tbody">
+                                            <tr><td colspan="6" class="text-center py-3 text-muted">Loading transactions...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <div class="card-fintrust">
+                            <div class="card-header">
+                                <h5><i class="bi bi-bar-chart text-primary me-2"></i>Double-Entry Debit / Credit Postings</h5>
+                            </div>
+                            <div class="card-body" style="height: 280px;">
+                                <canvas id="chart-ledger-balance"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: ORGANIZATIONS -->
+            <section id="view-organizations" class="app-view" style="display: none;">
+                <div class="card-fintrust mb-4">
+                    <div class="card-header">
+                        <div>
+                            <h5>Organization & Corporate Entity Management</h5>
+                            <div class="text-muted small">Manage corporate accounts, tax identifiers, risk classifications, and employee access.</div>
+                        </div>
+                        <button class="btn btn-ft-primary" data-bs-toggle="modal" data-bs-target="#createOrgModal">
+                            <i class="bi bi-plus-lg"></i> Create Organization
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Entity Name</th>
+                                        <th>Registration Number</th>
+                                        <th>Jurisdiction</th>
+                                        <th>Risk Tier</th>
+                                        <th>Team Roster</th>
+                                        <th>Annual Turnover</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orgs-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading organizations...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: TRANSACTIONS -->
+            <section id="view-transactions" class="app-view" style="display: none;">
+                <div class="card-fintrust mb-4">
+                    <div class="card-header flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1">
+                            <select class="form-select form-select-sm w-auto" id="filter-tx-status">
+                                <option value="">All Statuses</option>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="FLAGGED">Flagged</option>
+                                <option value="UNDER_REVIEW">Under Review</option>
+                                <option value="REJECTED">Rejected</option>
+                            </select>
+                            <select class="form-select form-select-sm w-auto" id="filter-tx-risk">
+                                <option value="">All Risk Tiers</option>
+                                <option value="LOW">Low Risk</option>
+                                <option value="MEDIUM">Medium Risk</option>
+                                <option value="HIGH">High Risk</option>
+                                <option value="CRITICAL">Critical Risk</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-ft-primary" data-bs-toggle="modal" data-bs-target="#createTransactionModal">
+                            <i class="bi bi-plus-circle"></i> Create Financial Transaction
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Ref</th>
+                                        <th>Entity & Corridor</th>
+                                        <th>Amount</th>
+                                        <th>Accounts (Src / Dst)</th>
+                                        <th>Status</th>
+                                        <th>Risk Assessment</th>
+                                        <th>Timestamp</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-tbody">
+                                    <tr><td colspan="8" class="text-center py-4 text-muted">Loading transactions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: LEDGER VERIFICATION -->
+            <section id="view-ledger" class="app-view" style="display: none;">
+                <div class="card-fintrust mb-4">
+                    <div class="card-header">
+                        <div>
+                            <h5>Double-Entry Bookkeeping Verification & Reconciliation</h5>
+                            <div class="text-muted small">Validates debits equal credits, detects duplicate postings, and reconciles account balances.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-ft-secondary" id="btn-run-ledger-verify">
+                                <i class="bi bi-play-circle text-primary"></i> Run Verification Algorithm
+                            </button>
+                            <button class="btn btn-ft-primary" id="btn-auto-reconcile">
+                                <i class="bi bi-check2-all"></i> Auto-Reconcile Balanced Entries
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Verification Engine Output Report (Dynamic) -->
+                        <div id="verification-report-container" style="display: none;"></div>
+
+                        <h6 class="fw-bold text-dark mt-2 mb-3">All Double-Entry Ledger Postings</h6>
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction Ref</th>
+                                        <th>Entry Type</th>
+                                        <th>Account Number</th>
+                                        <th>Amount</th>
+                                        <th>Balance After</th>
+                                        <th>Audit Status</th>
+                                        <th>Auditor / Notes</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ledger-tbody">
+                                    <tr><td colspan="8" class="text-center py-4 text-muted">Loading ledger entries...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: RISK ANALYSIS & ALERTS -->
+            <section id="view-risk" class="app-view" style="display: none;">
+                <!-- Risk Simulator Card -->
+                <div class="card-fintrust mb-4 border-primary">
+                    <div class="card-header bg-light">
+                        <h5 class="text-primary"><i class="bi bi-cpu-fill me-2"></i>Interactive Rule-Based Risk Engine Simulator</h5>
+                        <span class="badge bg-primary">Real-Time Evaluation</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Transfer Amount ($ USD)</label>
+                                <input type="number" class="form-control" id="sim-amount" value="9950" step="50">
+                                <span class="form-text text-muted">Try $9,950 (CTR Smurfing), $50,000, $250,000</span>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Destination Jurisdiction</label>
+                                <select class="form-select" id="sim-country">
+                                    <option value="USA">United States (USA) - Standard</option>
+                                    <option value="DEU">Germany (DEU) - Standard</option>
+                                    <option value="CYM" selected>Cayman Islands (CYM) - Tax Haven</option>
+                                    <option value="PAN">Panama (PAN) - Tax Haven</option>
+                                    <option value="RUS">Russia (RUS) - Sanctioned Embargo</option>
+                                    <option value="IRN">Iran (IRN) - Sanctioned Embargo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Transaction Type</label>
+                                <select class="form-select" id="sim-type">
+                                    <option value="TRANSFER">WIRE / TRANSFER</option>
+                                    <option value="WITHDRAWAL">CASH WITHDRAWAL</option>
+                                    <option value="PAYMENT">VENDOR PAYMENT</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 bg-light rounded border text-center">
+                                    <div class="small fw-bold text-muted mb-1">Calculated Score</div>
+                                    <div class="fs-3 fw-bold text-danger" id="sim-score">72.0/100</div>
+                                    <div class="badge-ft badge-risk-high" id="sim-tier">HIGH</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="risk-meter-container mt-3">
+                            <div class="d-flex justify-content-between small fw-bold mb-1">
+                                <span>Risk Level Meter</span>
+                                <span>0 = Safe | 100 = Sanctioned / Critical</span>
+                            </div>
+                            <div class="risk-meter-bar">
+                                <div class="risk-meter-fill" id="sim-meter-fill" style="width: 72%; background-color: #EF4444;"></div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="small fw-bold text-dark mb-1">Triggered Compliance Rules:</div>
+                                <ul class="mb-0 ps-3 text-secondary" id="sim-rules-list">
+                                    <li>Evaluating rules...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suspicious Transaction Alerts Table -->
+                <div class="card-fintrust">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5>Suspicious Transaction Alerts</h5>
+                            <div class="text-muted small">Automated alerts flagged by surveillance rules requiring compliance review.</div>
+                        </div>
+                        <select class="form-select form-select-sm w-auto" id="filter-alert-status">
+                            <option value="">All Alerts</option>
+                            <option value="NEW">New (Unreviewed)</option>
+                            <option value="IN_REVIEW">In Review</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="DISMISSED">Dismissed</option>
+                        </select>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Alert Code</th>
+                                        <th>Severity</th>
+                                        <th>Rule Title & Description</th>
+                                        <th>Transaction Ref</th>
+                                        <th>Status</th>
+                                        <th>Compliance Reviewer</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alerts-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading alerts...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 6: AUDIT TRAIL -->
+            <section id="view-audit" class="app-view" style="display: none;">
+                <div class="card-fintrust">
+                    <div class="card-header flex-wrap gap-2">
+                        <div>
+                            <h5>Immutable Financial Audit Trail</h5>
+                            <div class="text-muted small">Cryptographically structured, immutable record of user actions, transactions, and state transitions.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm w-auto" id="filter-audit-entity">
+                                <option value="">All Entities</option>
+                                <option value="TRANSACTION">Transaction</option>
+                                <option value="LEDGER">Ledger</option>
+                                <option value="ALERT">Alert</option>
+                                <option value="ORGANIZATION">Organization</option>
+                                <option value="USER">User</option>
+                                <option value="DOCUMENT">Document</option>
+                            </select>
+                            <select class="form-select form-select-sm w-auto" id="filter-audit-action">
+                                <option value="">All Actions</option>
+                                <option value="TRANSACTION_CREATED">Transaction Created</option>
+                                <option value="LEDGER_VERIFIED">Ledger Verified</option>
+                                <option value="ALERT_RESOLVED">Alert Resolved</option>
+                                <option value="USER_LOGIN">User Login</option>
+                                <option value="ORGANIZATION_CREATED">Org Created</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Audit ID</th>
+                                        <th>Action</th>
+                                        <th>Entity Type & Target</th>
+                                        <th>Initiated By</th>
+                                        <th>IP Address</th>
+                                        <th>Timestamp (UTC)</th>
+                                        <th>State Changes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading audit records...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 7: REPORTS & S3 VAULT -->
+            <section id="view-reports" class="app-view" style="display: none;">
+                <div class="row g-4 mb-4">
+                    <!-- Compliance Audit Statement -->
+                    <div class="col-xl-6">
+                        <div class="card-fintrust h-100">
+                            <div class="card-header">
+                                <h5><i class="bi bi-file-earmark-check-fill text-primary me-2"></i>Regulatory Compliance Statement</h5>
+                                <button class="btn btn-sm btn-ft-secondary" id="btn-print-compliance">
+                                    <i class="bi bi-printer"></i> Print / Export
+                                </button>
+                            </div>
+                            <div class="card-body" id="compliance-statement-content">
+                                <div class="text-center py-3 text-muted"><span class="spinner-border spinner-border-sm me-2"></span>Compiling statement...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- S3 Vault Overview Card -->
+                    <div class="col-xl-6">
+                        <div class="card-fintrust h-100">
+                            <div class="card-header">
+                                <h5><i class="bi bi-cloud-check-fill text-info me-2"></i>S3-Compatible Secure Document Vault</h5>
+                                <button class="btn btn-sm btn-ft-primary" data-bs-toggle="modal" data-bs-target="#uploadDocModal">
+                                    <i class="bi bi-upload"></i> Upload Document
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="p-3 bg-light rounded border mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold small text-dark">S3 Bucket:</span>
+                                        <span class="mono-text small">s3://fintrust-vault/</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold small text-dark">Integrity Hashing:</span>
+                                        <span class="badge bg-secondary">SHA-256 Checksum Verified</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold small text-dark">Document Encryption:</span>
+                                        <span class="badge bg-success">AES-256 at Rest</span>
+                                    </div>
+                                </div>
+                                <div class="text-muted small">
+                                    All compliance documents, proofs of funds, contracts, and vendor invoices are stored with immutable cryptographic SHA-256 hashes for regulatory audit compliance.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Table -->
+                <div class="card-fintrust">
+                    <div class="card-header">
+                        <h5>S3 Vault Documents</h5>
+                        <span class="badge bg-light text-dark border">Encrypted Files</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-fintrust mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Category</th>
+                                        <th>S3 Key Path</th>
+                                        <th>File Size</th>
+                                        <th>SHA-256 Checksum</th>
+                                        <th>Status</th>
+                                        <th>Uploaded Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="documents-tbody">
+                                    <tr><td colspan="7" class="text-center py-4 text-muted">Loading documents...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 8: ARCHITECTURE -->
+            <section id="view-architecture" class="app-view" style="display: none;">
+                <div class="card-fintrust mb-4">
+                    <div class="card-header">
+                        <h5>FinTrust Microservices System Architecture</h5>
+                        <span class="badge bg-primary">Full-Stack Design</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-4 rounded border bg-light h-100">
+                                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-filetype-php me-2"></i>PHP 8+ Microservice (Port 8000)</h6>
+                                    <ul class="small mb-0 ps-3 text-secondary">
+                                        <li><strong>Authentication:</strong> JWT token issuance (HS256) & RBAC.</li>
+                                        <li><strong>Organization Management:</strong> Corporate entities & employee rosters.</li>
+                                        <li><strong>Document Handling:</strong> S3 storage abstraction & SHA-256 checksums.</li>
+                                        <li><strong>Reporting APIs:</strong> Summary aggregations & compliance reports.</li>
+                                        <li><strong>API Gateway / Proxy:</strong> Dispatches to Java service with zero-downtime resilient failover.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-4 rounded border bg-light h-100">
+                                    <h6 class="fw-bold text-danger mb-3"><i class="bi bi-filetype-java me-2"></i>Java Jakarta Servlet Microservice (Port 8080)</h6>
+                                    <ul class="small mb-0 ps-3 text-secondary">
+                                        <li><strong>Transaction Processing:</strong> High-throughput financial ledger intake.</li>
+                                        <li><strong>Ledger Verification:</strong> Double-entry balancing & duplicate detection.</li>
+                                        <li><strong>Risk Engine:</strong> Rule-based risk score calculations (0-100).</li>
+                                        <li><strong>Audit Trail:</strong> Immutable event logging & change capture.</li>
+                                        <li><strong>Deployment:</strong> Jakarta Servlet 6.0 / Apache Tomcat & Standalone runner.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-4 rounded border bg-white">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-database-fill-gear me-2"></i>PostgreSQL Database Schema & Tables</h6>
+                            <div class="row g-2 small">
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">users (id, email, password_hash, role)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">organizations (id, reg_no, tax_id, risk_tier)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">employees (id, org_id, user_id, designation)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">transactions (id, ref, amount, risk_level)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">ledger_entries (id, tx_id, debit, credit)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">risk_scores (id, tx_id, score, rules)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">alerts (id, alert_code, severity, status)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">audit_logs (id, action, old_val, new_val)</div></div>
+                                <div class="col-md-4"><div class="p-2 border rounded bg-light mono-text">documents (id, s3_key, checksum, size)</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<!-- ==============================================================================
+     MODALS
+     ============================================================================== -->
+
+<!-- 1. AUTHENTICATION MODAL -->
+<div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+                        <i class="bi bi-shield-lock-fill"></i>
+                    </div>
+                    <h5 class="modal-title">FinTrust Secure Gateway</h5>
+                </div>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="text-muted small mb-3">Sign in to access financial transaction surveillance & auditing.</p>
+
+                <!-- Tabs -->
+                <ul class="nav nav-pills nav-fill mb-3" id="authTabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active py-2" id="login-tab" data-bs-toggle="pill" data-bs-target="#tab-login" type="button">Sign In</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link py-2" id="register-tab" data-bs-toggle="pill" data-bs-target="#tab-register" type="button">Create Account</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <!-- Login Tab -->
+                    <div class="tab-pane fade show active" id="tab-login">
+                        <div class="alert alert-danger py-2 small" id="login-error" style="display: none;"></div>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Corporate Email</label>
+                                <input type="email" class="form-control" id="login-email" value="admin@fintrust.io" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-control" id="login-password" value="Admin@123" required>
+                            </div>
+                            <button type="submit" class="btn btn-ft-primary w-100 py-2 justify-content-center">
+                                <i class="bi bi-box-arrow-in-right"></i> Authenticate with JWT
+                            </button>
+                        </form>
+
+                        <!-- Quick 1-Click Demo Profiles -->
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="small fw-bold text-muted mb-2">1-Click Quick Demo Access:</div>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-xs btn-ft-secondary py-1 px-2 btn-quick-login" data-email="admin@fintrust.io">
+                                    <i class="bi bi-person-fill-gear"></i> Admin / CRO
+                                </button>
+                                <button class="btn btn-xs btn-ft-secondary py-1 px-2 btn-quick-login" data-email="compliance@fintrust.io">
+                                    <i class="bi bi-shield-check"></i> Compliance Officer
+                                </button>
+                                <button class="btn btn-xs btn-ft-secondary py-1 px-2 btn-quick-login" data-email="auditor@fintrust.io">
+                                    <i class="bi bi-file-earmark-check"></i> Auditor
+                                </button>
+                                <button class="btn btn-xs btn-ft-secondary py-1 px-2 btn-quick-login" data-email="analyst@fintrust.io">
+                                    <i class="bi bi-activity"></i> Risk Analyst
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Register Tab -->
+                    <div class="tab-pane fade" id="tab-register">
+                        <div class="alert alert-danger py-2 small" id="register-error" style="display: none;"></div>
+                        <form id="registerForm">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="reg-fullname" placeholder="John Doe" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Work Email</label>
+                                    <input type="email" class="form-control" id="reg-email" placeholder="john@fintrust.io" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">Role</label>
+                                    <select class="form-select" id="reg-role">
+                                        <option value="ANALYST">Risk Analyst</option>
+                                        <option value="MANAGER">Finance Manager</option>
+                                        <option value="AUDITOR">Internal Auditor</option>
+                                        <option value="COMPLIANCE_OFFICER">Compliance Officer</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Department</label>
+                                    <input type="text" class="form-control" id="reg-dept" value="Transaction Surveillance">
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text" class="form-control" id="reg-phone" placeholder="+1-555-0199">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" id="reg-password" minlength="8" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-ft-primary w-100 py-2 justify-content-center">
+                                <i class="bi bi-person-plus-fill"></i> Register & Issue Token
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. CREATE TRANSACTION MODAL (WITH LIVE RISK METER) -->
+<div class="modal fade" id="createTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-arrow-left-right text-primary me-2"></i>Initiate Financial Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createTransactionForm">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Debiting Corporate Entity</label>
+                            <select class="form-select select-org-options" id="tx-org" required></select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Transaction Type</label>
+                            <select class="form-select" id="tx-type">
+                                <option value="TRANSFER">WIRE / TRANSFER</option>
+                                <option value="PAYMENT">VENDOR PAYMENT</option>
+                                <option value="WITHDRAWAL">CASH WITHDRAWAL</option>
+                                <option value="DEPOSIT">CAPITAL DEPOSIT</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Currency</label>
+                            <select class="form-select" id="tx-currency">
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="SGD">SGD (S$)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label">Transfer Amount</label>
+                            <input type="number" class="form-control" id="tx-amount" placeholder="50000.00" step="0.01" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Source Account (Debit)</label>
+                            <input type="text" class="form-control" id="tx-source" value="ACC-US-992011" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Destination Account (Credit)</label>
+                            <input type="text" class="form-control" id="tx-dest" value="ACC-EU-882100" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Destination Country Corridor</label>
+                            <select class="form-select" id="tx-country">
+                                <option value="USA">United States (USA)</option>
+                                <option value="CHE">Switzerland (CHE)</option>
+                                <option value="DEU">Germany (DEU)</option>
+                                <option value="GBR">United Kingdom (GBR)</option>
+                                <option value="SGP">Singapore (SGP)</option>
+                                <option value="CYM">Cayman Islands (CYM) - Low Tax</option>
+                                <option value="RUS">Russia (RUS) - High Sanctions Watch</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Transaction Purpose / Description</label>
+                            <input type="text" class="form-control" id="tx-desc" placeholder="e.g. Quarterly subsidiary treasury settlement">
+                        </div>
+                    </div>
+
+                    <!-- Live Risk Engine Simulator Output -->
+                    <div class="risk-meter-container">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small fw-bold text-dark">Pre-Execution Risk Assessment:</span>
+                            <span class="small" id="live-risk-label">Evaluating...</span>
+                        </div>
+                        <div class="risk-meter-bar">
+                            <div class="risk-meter-fill" id="live-risk-fill" style="width: 5%; background-color: #10B981;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Score: <strong id="live-risk-score">0.0</strong>/100</span>
+                            <span class="small">Double-Entry Ledger Verified</span>
+                        </div>
+                        <div class="small fw-semibold text-dark mb-1">Surveillance Rules Applied:</div>
+                        <ul class="mb-0 ps-3 text-secondary" id="live-risk-rules">
+                            <li class="small">Enter transfer details to view rule calculation</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ft-primary">
+                        <i class="bi bi-shield-check"></i> Post Transaction & Update Ledger
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 3. INSPECT TRANSACTION DETAIL MODAL -->
+<div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0">Transaction Dossier: <span class="mono-text text-primary" id="td-ref"></span></h5>
+                    <div class="text-muted small" id="td-org"></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <div class="small text-muted mb-1">Amount</div>
+                            <div class="fs-5 fw-bold text-dark" id="td-amount"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <div class="small text-muted mb-1">Status</div>
+                            <div id="td-status"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <div class="small text-muted mb-1">Risk Evaluation</div>
+                            <div id="td-risk"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="small text-muted fw-bold">Source Account</label>
+                        <div class="mono-text p-2 bg-light rounded border" id="td-src"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted fw-bold">Destination Account</label>
+                        <div class="mono-text p-2 bg-light rounded border" id="td-dst"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="small text-muted fw-bold">Description / Purpose</label>
+                        <div class="p-2 bg-light rounded border text-secondary" id="td-desc"></div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-light rounded border">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-shield-check text-primary me-2"></i>Risk Factors & Rule Matches</h6>
+                    <ul class="mb-0 ps-3" id="td-rules-container"></ul>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-success" id="btn-approve-tx">
+                        <i class="bi bi-check-lg"></i> Mark Completed
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" id="btn-flag-tx">
+                        <i class="bi bi-flag-fill"></i> Flag For Review
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" id="btn-reject-tx">
+                        <i class="bi bi-x-circle-fill"></i> Reject
+                    </button>
+                </div>
+                <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. CREATE ORGANIZATION MODAL -->
+<div class="modal fade" id="createOrgModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-building text-primary me-2"></i>Create Organization</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createOrgForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Legal Entity Name</label>
+                        <input type="text" class="form-control" id="org-name" placeholder="Acme Global Corporation" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Registration Number</label>
+                            <input type="text" class="form-control" id="org-regnum" placeholder="CORP-US-10294" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tax ID</label>
+                            <input type="text" class="form-control" id="org-taxid" placeholder="TAX-882-9901" required>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Country</label>
+                            <input type="text" class="form-control" id="org-country" value="USA" maxlength="3" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Base Currency</label>
+                            <input type="text" class="form-control" id="org-currency" value="USD" maxlength="3" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Risk Tier</label>
+                            <select class="form-select" id="org-risktier">
+                                <option value="LOW">LOW</option>
+                                <option value="MEDIUM">MEDIUM</option>
+                                <option value="HIGH">HIGH</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Compliance Contact Email</label>
+                            <input type="email" class="form-control" id="org-contact" placeholder="compliance@acme.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Annual Turnover ($)</label>
+                            <input type="number" class="form-control" id="org-turnover" value="10000000" step="10000">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ft-primary">Create Entity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 5. ORGANIZATION DETAILS & ROSTER MODAL -->
+<div class="modal fade" id="orgDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0" id="org-detail-title">Organization</h5>
+                    <div class="text-muted small">Registration: <span class="mono-text" id="org-detail-reg"></span> • Tax ID: <span class="mono-text" id="org-detail-tax"></span></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-2 bg-light rounded border small">
+                            <strong>Jurisdiction:</strong> <span id="org-detail-country"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-2 bg-light rounded border small">
+                            <strong>Risk Classification:</strong> <span id="org-detail-risk"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-2 bg-light rounded border small">
+                            <strong>Contact:</strong> <span id="org-detail-contact"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Assigned Employees & Officers</h6>
+                    <button class="btn btn-sm btn-ft-primary py-1 px-2" id="btn-add-employee-trigger">
+                        <i class="bi bi-person-plus"></i> Assign Member
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Designation</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody id="org-employees-tbody">
+                            <tr><td colspan="5" class="text-center py-3 text-muted">Loading roster...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 6. ASSIGN EMPLOYEE MODAL -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Assign Team Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addEmployeeForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select User</label>
+                        <select class="form-select" id="assign-user-id" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" id="assign-dept" value="Treasury & Finance" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Designation</label>
+                        <input type="text" class="form-control" id="assign-designation" value="Financial Controller" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role in Organization</label>
+                        <select class="form-select" id="assign-role">
+                            <option value="ANALYST">Analyst</option>
+                            <option value="MANAGER">Manager</option>
+                            <option value="AUDITOR">Auditor</option>
+                            <option value="COMPLIANCE_OFFICER">Compliance Officer</option>
+                            <option value="ADMIN">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ft-primary">Assign Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 7. REVIEW ALERT MODAL -->
+<div class="modal fade" id="reviewAlertModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0">Compliance Alert Review</h5>
+                    <div class="mono-text small text-danger" id="modal-alert-code"></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="reviewAlertForm">
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <div class="fw-bold text-dark mb-1" id="modal-alert-title"></div>
+                        <div class="text-secondary small mb-2" id="modal-alert-desc"></div>
+                        <div class="small">Associated Transaction: <strong class="mono-text" id="modal-alert-tx"></strong></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Resolution Status</label>
+                        <select class="form-select" id="alert-resolution-status">
+                            <option value="IN_REVIEW">Under Investigation (In Review)</option>
+                            <option value="RESOLVED">Cleared / Resolved</option>
+                            <option value="DISMISSED">False Positive (Dismissed)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Compliance Findings & Resolution Notes</label>
+                        <textarea class="form-control" id="alert-resolution-notes" rows="4" placeholder="Detail the verification steps and corporate authorization obtained..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ft-primary">Save Resolution & Update Audit Trail</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 8. AUDIT DIFF MODAL -->
+<div class="modal fade" id="auditDiffModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title mb-0">Audit Trail State Diff</h5>
+                    <div class="small text-muted" id="diff-log-action"></div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between small text-muted mb-2">
+                    <span>User: <strong id="diff-log-user"></strong></span>
+                    <span>Timestamp: <strong id="diff-log-time"></strong></span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label text-danger fw-bold"><i class="bi bi-dash-circle me-1"></i>Before State (Old Values)</label>
+                        <pre class="diff-viewer" id="diff-old-values"></pre>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-success fw-bold"><i class="bi bi-plus-circle me-1"></i>After State (New Values)</label>
+                        <pre class="diff-viewer" id="diff-new-values"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 9. UPLOAD DOCUMENT TO S3 MODAL -->
+<div class="modal fade" id="uploadDocModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-cloud-arrow-up text-primary me-2"></i>Upload to S3 Document Vault</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="uploadDocumentForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Organization</label>
+                        <select class="form-select select-org-options" id="doc-org" required></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Document Category</label>
+                        <select class="form-select" id="doc-category">
+                            <option value="INVOICE">Vendor Invoice</option>
+                            <option value="PROOF_OF_FUNDS">Proof of Funds</option>
+                            <option value="CONTRACT">Corporate Contract</option>
+                            <option value="AUDIT_REPORT">Audit Report</option>
+                            <option value="TAX_FILING">Tax Filing</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Select Document File (PDF, DOCX, PNG)</label>
+                        <input type="file" class="form-control" id="doc-file" required>
+                        <span class="form-text text-muted">A SHA-256 integrity hash will automatically be calculated upon storage.</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ft-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-ft-primary">Upload & Encrypt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js 4+ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+<!-- FinTrust Application Scripts -->
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/dashboard.js"></script>
+<script src="/js/organizations.js"></script>
+<script src="/js/transactions.js"></script>
+<script src="/js/ledger.js"></script>
+<script src="/js/risk.js"></script>
+<script src="/js/audit.js"></script>
+<script src="/js/reports.js"></script>
+
+<!-- Main App Initializer & Navigation Router -->
+<script>
+    // Navigation Routing
+    function switchView(viewName) {
+        document.querySelectorAll('.app-view').forEach(view => {
+            view.style.display = 'none';
+        });
+
+        const targetView = document.getElementById('view-' + viewName);
+        if (targetView) {
+            targetView.style.display = 'block';
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('data-view') === viewName) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        const titles = {
+            'overview': 'Overview Dashboard',
+            'organizations': 'Organization Management',
+            'transactions': 'Transaction Management',
+            'ledger': 'Ledger Verification & Reconciliation',
+            'risk': 'Risk Analysis & Surveillance Alerts',
+            'audit': 'Immutable Audit History',
+            'reports': 'Compliance Reports & S3 Document Vault',
+            'architecture': 'Microservices System Architecture'
+        };
+        const titleEl = document.getElementById('current-view-title');
+        if (titleEl) titleEl.textContent = titles[viewName] || 'Dashboard';
+
+        // Load specific view data
+        if (viewName === 'overview') DashboardModule.loadDashboard();
+        else if (viewName === 'organizations') OrganizationsModule.loadOrganizations();
+        else if (viewName === 'transactions') TransactionsModule.loadTransactions();
+        else if (viewName === 'ledger') LedgerModule.loadLedger();
+        else if (viewName === 'risk') RiskModule.loadAlerts();
+        else if (viewName === 'audit') AuditModule.loadAuditLogs();
+        else if (viewName === 'reports') ReportsModule.loadReportsAndDocuments();
+    }
+
+    // App Bootstrap
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Bind sidebar clicks
+        document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const view = item.getAttribute('data-view');
+                switchView(view);
+            });
+        });
+
+        // Initialize modules
+        AuthModule.init();
+        OrganizationsModule.init();
+        TransactionsModule.init();
+        LedgerModule.init();
+        RiskModule.init();
+        AuditModule.init();
+        ReportsModule.init();
+
+        // Listen for authentication event to load initial data
+        window.addEventListener('fintrust:user-authenticated', () => {
+            switchView('overview');
+        });
+    });
+</script>
+
+</body>
+</html>

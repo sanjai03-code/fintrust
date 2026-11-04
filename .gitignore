@@ -1,0 +1,65 @@
+# ==============================================================================
+# FinTrust .gitignore
+# ==============================================================================
+
+# ── Environment & Secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.secret
+
+# ── Database files ────────────────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Node / JS dependencies ────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ── PHP dependencies & cache ──────────────────────────────────────────────────
+vendor/
+composer.lock
+php-service/uploads/
+
+# ── Java compiled output ──────────────────────────────────────────────────────
+java-service/bin/
+java-service/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ── Build artifacts ───────────────────────────────────────────────────────────
+build/
+dist/
+out/
+*.log
+
+# ── IDE & OS files ────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ── Temporary files ───────────────────────────────────────────────────────────
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+
+.env

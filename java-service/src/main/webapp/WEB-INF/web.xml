@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <display-name>FinTrust Java Microservice</display-name>
+
+    <!-- Transaction Servlet -->
+    <servlet>
+        <servlet-name>TransactionServlet</servlet-name>
+        <servlet-class>com.fintrust.servlet.TransactionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TransactionServlet</servlet-name>
+        <url-pattern>/api/transactions/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Ledger Verification Servlet -->
+    <servlet>
+        <servlet-name>LedgerServlet</servlet-name>
+        <servlet-class>com.fintrust.servlet.LedgerServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LedgerServlet</servlet-name>
+        <url-pattern>/api/ledger/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Risk Analysis Servlet -->
+    <servlet>
+        <servlet-name>RiskAnalysisServlet</servlet-name>
+        <servlet-class>com.fintrust.servlet.RiskAnalysisServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RiskAnalysisServlet</servlet-name>
+        <url-pattern>/api/risk/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Audit Trail Servlet -->
+    <servlet>
+        <servlet-name>AuditServlet</servlet-name>
+        <servlet-class>com.fintrust.servlet.AuditServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuditServlet</servlet-name>
+        <url-pattern>/api/audit/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
