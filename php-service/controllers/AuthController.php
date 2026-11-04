@@ -69,6 +69,14 @@ class AuthController {
         $password = trim($input['password'] ?? '');
         $fullName = trim($input['full_name'] ?? '');
         $role = strtoupper(trim($input['role'] ?? 'ANALYST'));
+        if (strtolower(getenv('APP_ENV') ?: 'development') === 'production') {
+            $role = 'ANALYST';
+        } else {
+            $validRoles = ['ADMIN', 'COMPLIANCE_OFFICER', 'AUDITOR', 'MANAGER', 'ANALYST'];
+            if (!in_array($role, $validRoles, true)) {
+                $role = 'ANALYST';
+            }
+        }
         $department = trim($input['department'] ?? 'Risk Operations');
         $phone = trim($input['phone'] ?? '');
 
@@ -85,11 +93,6 @@ class AuthController {
         if (strlen($password) < 8) {
             $this->json(['success' => false, 'error' => 'Password must be at least 8 characters long'], 400);
             return;
-        }
-
-        $validRoles = ['ADMIN', 'COMPLIANCE_OFFICER', 'AUDITOR', 'MANAGER', 'ANALYST'];
-        if (!in_array($role, $validRoles, true)) {
-            $role = 'ANALYST';
         }
 
         $pdo = Database::getConnection();

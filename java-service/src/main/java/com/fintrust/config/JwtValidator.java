@@ -12,10 +12,18 @@ public class JwtValidator {
 
     private static String getSecret() {
         String secret = System.getenv("JWT_SECRET");
-        if (secret == null || secret.trim().isEmpty()) {
-            secret = "fintrust_super_secure_jwt_shared_secret_key_2026_xyz987654321";
+        if (secret != null && !secret.trim().isEmpty()) {
+            if ("production".equalsIgnoreCase(System.getenv("APP_ENV")) && secret.length() < 32) {
+                throw new IllegalStateException("JWT_SECRET must be at least 32 characters in production.");
+            }
+            return secret;
         }
-        return secret;
+
+        if ("production".equalsIgnoreCase(System.getenv("APP_ENV"))) {
+            throw new IllegalStateException("JWT_SECRET must be configured in production.");
+        }
+
+        return "fintrust-local-development-only-secret";
     }
 
     public static Map<String, Object> validateToken(String token) {

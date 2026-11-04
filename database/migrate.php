@@ -33,11 +33,16 @@ $dbname = getenv('DB_DATABASE') ?: 'fintrust';
 $user = getenv('DB_USERNAME') ?: 'postgres';
 $pass = getenv('DB_PASSWORD') ?: 'postgres';
 $sqlitePath = $projectRoot . '/database/fintrust.db';
+$isProduction = strtolower(getenv('APP_ENV') ?: 'development') === 'production';
 
 $pdo = null;
 
 echo "=== FinTrust Database Migration Runner ===\n";
 echo "Configured Driver: {$driver}\n";
+
+if ($isProduction && $driver !== 'pgsql') {
+    throw new RuntimeException('Production deployments must use PostgreSQL.');
+}
 
 if ($driver === 'pgsql') {
     try {
@@ -48,6 +53,9 @@ if ($driver === 'pgsql') {
         ]);
         echo "[OK] Connected to PostgreSQL at {$host}:{$port}/{$dbname}\n";
     } catch (PDOException $e) {
+        if ($isProduction) {
+            throw new RuntimeException('Unable to connect to the production PostgreSQL database.', 0, $e);
+        }
         echo "[WARNING] PostgreSQL connection failed: " . $e->getMessage() . "\n";
         echo "[INFO] Seamlessly falling back to local SQLite database at: {$sqlitePath}\n";
         $driver = 'sqlite';
@@ -93,13 +101,20 @@ foreach ($migrationFiles as $filePath) {
         $pdo->exec($sql);
         echo "[SUCCESS]\n";
     } catch (PDOException $e) {
+        if ($isProduction) {
+            throw $e;
+        }
         echo "[ERROR] " . $e->getMessage() . "\n";
     }
 }
 
-// Run Seed Data
+// Demo credentials and records are only seeded in production when explicitly enabled.
+$seedDemoData = filter_var(
+    getenv('SEED_DEMO_DATA') ?: ($isProduction ? 'false' : 'true'),
+    FILTER_VALIDATE_BOOLEAN
+);
 $seedFile = $projectRoot . '/database/seed_data.sql';
-if (file_exists($seedFile)) {
+if ($seedDemoData && file_exists($seedFile)) {
     echo "Seeding initial demonstration records... ";
     $seedSql = file_get_contents($seedFile);
     if ($driver === 'sqlite') {
@@ -110,6 +125,9 @@ if (file_exists($seedFile)) {
         $pdo->exec($seedSql);
         echo "[SUCCESS]\n";
     } catch (PDOException $e) {
+        if ($isProduction) {
+            throw $e;
+        }
         echo "[NOTE/ALREADY SEEDED] " . $e->getMessage() . "\n";
     }
 }

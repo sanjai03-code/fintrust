@@ -22,6 +22,11 @@ public class DatabaseConfig {
         String dbname = getEnv("DB_DATABASE", "fintrust");
         String user = getEnv("DB_USERNAME", "postgres");
         String pass = getEnv("DB_PASSWORD", "postgres");
+        boolean isProduction = "production".equalsIgnoreCase(getEnv("APP_ENV", "development"));
+
+        if (isProduction && !"pgsql".equalsIgnoreCase(driver)) {
+            throw new SQLException("Production deployments must use PostgreSQL.");
+        }
 
         if ("pgsql".equalsIgnoreCase(driver)) {
             try {
@@ -29,6 +34,9 @@ public class DatabaseConfig {
                 Class.forName("org.postgresql.Driver");
                 return DriverManager.getConnection(pgUrl, user, pass);
             } catch (Exception e) {
+                if (isProduction) {
+                    throw new SQLException("Unable to connect to the production PostgreSQL database.", e);
+                }
                 System.err.println("[DatabaseConfig] PostgreSQL connection failed: " + e.getMessage() + ". Attempting SQLite fallback.");
             }
         }

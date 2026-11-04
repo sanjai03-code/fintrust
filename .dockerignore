@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+node_modules
+java-service/bin
+java-service/target
+php-service/uploads

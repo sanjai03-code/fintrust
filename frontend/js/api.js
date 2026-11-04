@@ -164,7 +164,7 @@ const FinTrustAPI = (() => {
         // Health
         system: {
             healthPhp: () => request('/api/health'),
-            healthJava: () => fetch('http://127.0.0.1:8080/api/health').then(r => r.json()).catch(() => ({ status: 'STANDALONE_STANDBY' }))
+            healthJava: () => request('/api/health/java')
         }
     };
 })();

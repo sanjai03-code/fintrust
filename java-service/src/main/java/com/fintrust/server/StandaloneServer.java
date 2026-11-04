@@ -31,6 +31,9 @@ public class StandaloneServer {
     public static void main(String[] args) throws IOException {
         int p = 8080;
         String portEnv = System.getenv("JAVA_SERVICE_PORT");
+        if (portEnv == null || portEnv.trim().isEmpty()) {
+            portEnv = System.getenv("PORT");
+        }
         if (portEnv != null && !portEnv.trim().isEmpty()) {
             p = Integer.parseInt(portEnv.trim());
         }

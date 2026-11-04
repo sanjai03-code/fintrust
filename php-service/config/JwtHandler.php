@@ -5,7 +5,19 @@ namespace FinTrust\Config;
 
 class JwtHandler {
     private static function getSecret(): string {
-        return getenv('JWT_SECRET') ?: 'fintrust_super_secure_jwt_shared_secret_key_2026_xyz987654321';
+        $secret = getenv('JWT_SECRET');
+        if ($secret !== false && trim($secret) !== '') {
+            if (strtolower(getenv('APP_ENV') ?: 'development') === 'production' && strlen($secret) < 32) {
+                throw new \RuntimeException('JWT_SECRET must be at least 32 characters in production.');
+            }
+            return $secret;
+        }
+
+        if (strtolower(getenv('APP_ENV') ?: 'development') === 'production') {
+            throw new \RuntimeException('JWT_SECRET must be configured in production.');
+        }
+
+        return 'fintrust-local-development-only-secret';
     }
 
     public static function encode(array $payload, int $ttl = 86400): string {

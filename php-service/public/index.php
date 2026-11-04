@@ -112,6 +112,34 @@ if ($uri === '/api/health') {
     exit;
 }
 
+if ($uri === '/api/health/java') {
+    $javaUrl = rtrim(getenv('JAVA_SERVICE_URL') ?: 'http://127.0.0.1:8080', '/') . '/api/health';
+    $ch = curl_init($javaUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 5
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    header('Content-Type: application/json');
+    if ($response === false || $httpCode < 200 || $httpCode >= 300) {
+        http_response_code(503);
+        echo json_encode([
+            'status' => 'DOWN',
+            'service' => 'FinTrust Java Service',
+            'error' => $curlError ?: 'Java service returned HTTP ' . $httpCode
+        ]);
+        exit;
+    }
+
+    echo $response;
+    exit;
+}
+
 // 2. Auth Endpoints
 $authCtrl = new AuthController();
 

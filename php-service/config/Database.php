@@ -22,6 +22,11 @@ class Database {
         $user = getenv('DB_USERNAME') ?: 'postgres';
         $pass = getenv('DB_PASSWORD') ?: 'postgres';
         $sqlitePath = $root . '/database/fintrust.db';
+        $isProduction = strtolower(getenv('APP_ENV') ?: 'development') === 'production';
+
+        if ($isProduction && $driver !== 'pgsql') {
+            throw new \RuntimeException('Production deployments must use PostgreSQL.');
+        }
 
         if ($driver === 'pgsql') {
             try {
@@ -33,7 +38,9 @@ class Database {
                 ]);
                 return self::$instance;
             } catch (PDOException $e) {
-                // If PostgreSQL connection fails, fallback to local SQLite
+                if ($isProduction) {
+                    throw new \RuntimeException('Unable to connect to the production PostgreSQL database.', 0, $e);
+                }
                 error_log("PostgreSQL connection error: " . $e->getMessage() . ". Using SQLite fallback.");
             }
         }

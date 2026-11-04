@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # FinTrust – Financial Transaction and Risk Management System
 
 [![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue.svg)](#architecture)
@@ -107,7 +106,7 @@ The database includes 9 core tables:
 
 ## 4. Default Seed Users & Credentials
 
-All demo accounts use the standard password: `Admin@123`
+Local demo accounts use the standard password: `Admin@123`. Production deployments do not seed these accounts unless explicitly configured.
 
 | User | Role | Email | Responsibilities |
 |---|---|---|---|
@@ -182,6 +181,11 @@ Open your browser to: **`http://127.0.0.1:8000`**
 - `POST /api/risk/alerts/{id}/resolve` – Review and resolve compliance alert
 - `POST /api/risk/evaluate` – Pre-execution risk score calculation
 - `GET  /api/audit` – Immutable audit trail & state diff records
-=======
-# -FINANCIAL-TRANSACTION-MONITORING-AND-RISK-MANAGEMENT-
->>>>>>> 9799f7163a37785d642e7b4827ce8b27f8a36204
+
+## 7. Deploying on Render
+
+The root `render.yaml` provisions a PHP/Java Docker web service and PostgreSQL. Create a Render Blueprint from the public GitHub repository and review the plan and pricing before applying it. Render generates the production JWT secret automatically; do not commit `.env` or paste secrets into the repository.
+
+Production migrations do not load the documented demo accounts or records by default. New public registrations are limited to the `ANALYST` role. This project is a demonstration; do not store real financial or personal data. Uploaded documents use local container storage and are not durable across redeploys.
+
+The free PostgreSQL plan is temporary and may expire; use a persistent paid database for a lasting deployment.

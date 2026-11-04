@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: fintrust
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DB_DRIVER
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: fintrust-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: fintrust-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: fintrust-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: fintrust-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: fintrust-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SEED_DEMO_DATA
+        value: "false"
+
+databases:
+  - name: fintrust-db
+    plan: free
+    databaseName: fintrust
+    user: fintrust_user
